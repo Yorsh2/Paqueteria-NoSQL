@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  app01:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo01
+      - redis01
+    environment:
+      - MONGO_URI=mongodb://mongo01:27017/Paqueteria
+      - REDIS_HOST=redis01
+      - REDIS_PORT=6379
+      - PORT=3000
+    networks:
+      - red01
+
+  mongo01:
+    image: mongo:latest
+    command: mongod --replSet replica01
+    ports:
+      - "27018:27017"
+    healthcheck:
+      test: >
+        echo "try { rs.status() } catch (err) { 
+          rs.initiate({
+            _id: 'replica01', 
+            members: [
+              { _id: 0, host: 'mongo01:27017', priority: 1 },
+              { _id: 1, host: 'mongo-secondary1:27017', priority: 0.5 },
+              { _id: 2, host: 'mongo-secondary2:27017', priority: 0.5 },
+              { _id: 3, host: 'mongo-secondary3:27017', priority: 0.5 }
+            ]
+          }) 
+        }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      retries: 30
+    depends_on:
+      - redis01
+    networks:
+      - red01
+
+  mongo-secondary1:
+    image: mongo:latest
+    command: mongod --replSet replica01
+    ports:
+      - "27019:27017"
+    depends_on:
+      - mongo01
+      - redis01
+    networks:
+      - red01
+
+  mongo-secondary2:
+    image: mongo:latest
+    command: mongod --replSet replica01
+    ports:
+      - "27020:27017"
+    depends_on:
+      - mongo-secondary1
+      - redis01
+    networks:
+      - red01
+
+  mongo-secondary3:
+    image: mongo:latest
+    command: mongod --replSet replica01
+    ports:
+      - "27021:27017"
+    depends_on:
+      - mongo-secondary2
+      - redis01
+    networks:
+      - red01
+
+  redis01:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - red01
+
+networks:
+  red01:
+    driver: bridge
