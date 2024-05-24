@@ -1,6 +1,7 @@
 # Alumno: Guzman Alvarez Jorge Alberto
 # Caso 01: Paqueteria
 ## Entidades:
+```
 Cliente:
 	CURP
 	Nombre
@@ -28,8 +29,9 @@ Envío:
 	Dimensiones
 	Costo total
 	Estatus (pendiente|tránsito|entregado)
-
+```
 ## Esquema de archivo
+```
 /Paqueteria
 |
 |---/src
@@ -70,20 +72,22 @@ Envío:
 |--.dockerignore
 |--docker-compose.yml
 |--.env
-
+```
 ##  Paquetes que se necesitan
+```
 npm install express
 npm install mongoose
 npm install redis
 npm install body-parser dotenv
 npm install cors
 npm install morgan
-
+```
 # ARCHIVOS
 ## -------- Directorio controllers --------
 ### /src/controllers/clientes.js
-
+```
 const Cliente = require('../models/cliente');
+
 const obtenerClientes = async (req, res) => {
   try {
     const clientes = await Cliente.find();
@@ -94,6 +98,7 @@ const obtenerClientes = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const crearClientes = async (req, res) => {
   const nuevoCliente = new Cliente(req.body);
   try {
@@ -103,6 +108,7 @@ const crearClientes = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
 const obtenerClientesPorCURP = async (req, res) => {
   try {
     const cliente = await Cliente.findOne({ CURP: req.params.curp });
@@ -116,6 +122,7 @@ const obtenerClientesPorCURP = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const actualizarCliente = async (req, res) => {
   try {
     const clienteActualizado = await Cliente.findOneAndUpdate({ CURP: req.params.curp }, req.body, {
@@ -129,6 +136,7 @@ const actualizarCliente = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
 const eliminarCliente = async (req, res) => {
   try {
     const cliente = await Cliente.findOneAndDelete({ CURP: req.params.curp });
@@ -140,6 +148,7 @@ const eliminarCliente = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 module.exports = {
   obtenerClientes,
   crearClientes,
@@ -147,23 +156,27 @@ module.exports = {
   actualizarCliente,
   eliminarCliente
 };
-
+```
 ### FIN /src/controllers/clientes.js
-### /src/controllers/envio.js
 
+### /src/controllers/envio.js
+```
 const Envios = require('../models/envio');
 const Clientes = require('../models/cliente');
 const Oficinas = require('../models/oficina');
 const TipoEnvio = require('../models/tipoEnvio');
+
 const obtenerEnvios = async (req, res) => {
   try {
     const envio = await Envios.find();
     res.body = (envio);
     res.status(200).json(envio);
+   
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 const crearEnvios = async (req, res) => {
   const nuevoEnvio = new Envios(req.body);
   try {
@@ -173,6 +186,7 @@ const crearEnvios = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
 const obtenerEnviosPorID = async (req, res) => {
   try {
     const envio = await Envios.findOne({ idEnvio: req.params.idEnvio });
@@ -180,11 +194,13 @@ const obtenerEnviosPorID = async (req, res) => {
       return res.status(404).json({ message: 'No se encontró el tipo de envio' });
     }
     res.body = (envio);
-    res.status(200).json(envio);  
+    res.status(200).json(envio);
+    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 const actualizarEnvio = async (req, res) => {
   try {
     const EnvioActualizado = await Envios.findOneAndUpdate({ idEnvio: req.params.idEnvio }, req.body, { new: true });
@@ -196,6 +212,7 @@ const actualizarEnvio = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
 const eliminarEnvio = async (req, res) => {
   try {
     const envio = await Envios.findOneAndDelete({ idEnvio: req.params.idEnvio });
@@ -207,20 +224,27 @@ const eliminarEnvio = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const listarEnviosQ2 = async (req, res) => {
   const { Origen } = req.query;
   try {
     const query = { Origen: req.params.Origen, Estatus: "tránsito" };
+
     if (Origen) {query.Origen = Origen;}
+
     const envios = await Envios.find(query);
+
     const origenIds = [...new Set(envios.map(envio => envio.Origen))];
     const destinoIds = [...new Set(envios.map(envio => envio.Destino))];
     const oficinaIds = [...new Set([...origenIds, ...destinoIds])];
+
     const oficinas = await Oficinas.find({ idOficina: { $in: oficinaIds } });
+
     const oficinaMap = oficinas.reduce((map, oficina) => {
       map[oficina.idOficina] = oficina.Nombre;
       return map;
     }, {});
+
     const enviosConNombres = envios.map(envio => ({
       ...envio.toObject(),
       Origen: oficinaMap[envio.Origen] || 'Desconocido',
@@ -233,26 +257,35 @@ const listarEnviosQ2 = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const listarTEnviosQ3 = async (req, res) => {
   const { Tipo_Envio } = req.query;
+
   try {
     const query = { Tipo_Envio: req.params.Tipo_Envio };
     if (Tipo_Envio) {query.Tipo_Envio = Tipo_Envio;}
+
     const envios = await Envios.find(query);
+
     const tipoEnvioIds = [...new Set(envios.map(envio => envio.Tipo_Envio))];
     const tiposEnvio = await TipoEnvio.find({ idTDE: { $in: tipoEnvioIds } });
+
     const tipoEnvioMap = tiposEnvio.reduce((map, tipo) => {
       map[tipo.idTDE] = tipo.Descripcion;
       return map;
     }, {});
+
     const origenIds = [...new Set(envios.map(envio => envio.Origen))];
     const destinoIds = [...new Set(envios.map(envio => envio.Destino))];
     const oficinaIds = [...new Set([...origenIds, ...destinoIds])];
+
     const oficinas = await Oficinas.find({ idOficina: { $in: oficinaIds } });
+
     const oficinaMap = oficinas.reduce((map, oficina) => {
       map[oficina.idOficina] = oficina.Nombre;
       return map;
     }, {});
+
     const enviosConNombresYTipoEnvio = envios.map(envio => ({
       ...envio.toObject(),
       Origen: oficinaMap[envio.Origen] || 'Desconocido',
@@ -261,31 +294,40 @@ const listarTEnviosQ3 = async (req, res) => {
     }));
     res.body = (enviosConNombresYTipoEnvio);  
     res.status(200).json(enviosConNombresYTipoEnvio);
+    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 const listarEnviosQ4 = async (req, res) => {
   const { Cliente } = req.query;
+
   try {
     const query = { Cliente: req.params.Cliente };
     if (Cliente) {
       query.Cliente = Cliente;
     }
+
     const enviosCliente = await Envios.find(query);
+
     const clientesCURP = [...new Set(enviosCliente.map(envio => envio.Cliente))];
+
     const clientes = await Clientes.find({ CURP: { $in: clientesCURP } }, 'CURP Nombre Apellidos Email');
+
     const clientesYEnvios = await Promise.all(clientes.map(async (cliente) => {
       const enviosClienteCliente = enviosCliente.filter(envio => envio.Cliente === cliente.CURP);
       const enviosConInfo = await Promise.all(enviosClienteCliente.map(async (envio) => {
         const origen = await Oficinas.findOne({ idOficina: envio.Origen });
         const destino = await Oficinas.findOne({ idOficina: envio.Destino });
+
         return {
           ...envio.toObject(),
           Origen: origen ? origen.Nombre : 'Desconocido',
           Destino: destino ? destino.Nombre : 'Desconocido'
         };
       }));
+
       return {
         cliente,
         envios: enviosConInfo
@@ -298,6 +340,9 @@ const listarEnviosQ4 = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
 const listarClientesPorOficinaQ5 = async (req, res) => {
   const { Origen } = req.query;
 
@@ -316,22 +361,29 @@ const listarClientesPorOficinaQ5 = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const listarEnviosQ6 = async (req, res) => {
   const { origen } = req.query;
+
   try {
     const query = { Estatus: "entregado" };
     if (origen) {
       query.Origen = origen;
     }
+
     const envios = await Envios.find(query);
+
     const origenIds = [...new Set(envios.map(envio => envio.Origen))];
     const destinoIds = [...new Set(envios.map(envio => envio.Destino))];
     const oficinaIds = [...new Set([...origenIds, ...destinoIds])];
+
     const oficinas = await Oficinas.find({ idOficina: { $in: oficinaIds } });
+
     const oficinaMap = oficinas.reduce((map, oficina) => {
       map[oficina.idOficina] = oficina.Nombre;
       return map;
     }, {});
+
     const enviosConNombres = envios.map(envio => ({
       ...envio.toObject(),
       Origen: oficinaMap[envio.Origen] || 'Desconocido',
@@ -339,15 +391,19 @@ const listarEnviosQ6 = async (req, res) => {
     }));
     res.body = (enviosConNombres);
     res.status(200).json(enviosConNombres);
+    
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 const listarClientesYEnviosQ7 = async (req, res) => {
   try {
     const enviosTerrestres = await Envios.find({ Tipo_Envio: 1 });
     const clientesCURP = [...new Set(enviosTerrestres.map(envio => envio.Cliente))];
     const clientes = await Clientes.find({ CURP: { $in: clientesCURP } }, 'CURP Nombre Apellidos Email');
+
     // Obtener información de oficinas y tipos de envío
     const tipoEnvioIds = [...new Set(enviosTerrestres.map(envio => envio.Tipo_Envio))];
     const tiposEnvio = await TipoEnvio.find({ idTDE: { $in: tipoEnvioIds } });
@@ -355,6 +411,7 @@ const listarClientesYEnviosQ7 = async (req, res) => {
       map[tipo.idTDE] = tipo.Descripcion;
       return map;
     }, {});
+
     const origenIds = [...new Set(enviosTerrestres.map(envio => envio.Origen))];
     const destinoIds = [...new Set(enviosTerrestres.map(envio => envio.Destino))];
     const oficinaIds = [...new Set([...origenIds, ...destinoIds])];
@@ -363,6 +420,7 @@ const listarClientesYEnviosQ7 = async (req, res) => {
       map[oficina.idOficina] = oficina.Nombre;
       return map;
     }, {});
+
     // Mapear clientes con sus envíos y agregar información de oficinas y tipos de envío
     const clientesYEnvios = clientes.map(cliente => ({
       cliente,
@@ -376,21 +434,29 @@ const listarClientesYEnviosQ7 = async (req, res) => {
     }));
     res.body = (clientesYEnvios);
     res.status(200).json(clientesYEnvios);
+    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 //Q8. Listar los clientes y sus envíos se han remitido por el servicio express considerando una oficina en específico.
 const listarClientesYEnviosQ8 = async (req, res) => {
   const { Origen } = req.query;
+
   try {
     const query = { Origen: req.params.Origen, Tipo_Envio: 3 };
     if (Origen) { query.Origen = Origen; }
+
     const enviosExpress = await Envios.find(query);
+
     // Obtener clientes únicos de los envíos expres
     const clientesCURP = [...new Set(enviosExpress.map(envio => envio.Cliente))];
+
     // Encontrar la información de los clientes
     const clientes = await Clientes.find({ CURP: { $in: clientesCURP } }, 'CURP Nombre Apellidos Email');
+
     // Obtener información de oficinas y tipos de envío
     const origenIds = [...new Set(enviosExpress.map(envio => envio.Origen))];
     const destinoIds = [...new Set(enviosExpress.map(envio => envio.Destino))];
@@ -400,12 +466,14 @@ const listarClientesYEnviosQ8 = async (req, res) => {
       map[oficina.idOficina] = oficina.Nombre;
       return map;
     }, {});
+
     const tipoEnvioIds = [...new Set(enviosExpress.map(envio => envio.Tipo_Envio))];
     const tiposEnvio = await TipoEnvio.find({ idTDE: { $in: tipoEnvioIds } });
     const tipoEnvioMap = tiposEnvio.reduce((map, tipo) => {
       map[tipo.idTDE] = tipo.Descripcion;
       return map;
     }, {});
+
     // Mapear clientes con sus envíos y agregar información de oficinas y tipos de envío
     const clientesYEnvios = clientes.map(cliente => ({
       cliente,
@@ -419,10 +487,13 @@ const listarClientesYEnviosQ8 = async (req, res) => {
     }));
     res.body = (clientesYEnvios);
     res.status(200).json(clientesYEnvios);
+    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 module.exports = {
   obtenerEnvios,
   crearEnvios,
@@ -437,21 +508,25 @@ module.exports = {
   listarClientesYEnviosQ7,
   listarClientesYEnviosQ8
 };
-
+```
 ### FIN /src/controllers/envio.js
-### /src/controllers/oficinas.js
 
+### /src/controllers/oficinas.js
+```
 // Importamos el modelo de Mongoose para Materia
 const Oficina = require('../models/oficina');
+
 const getOficinas = async (req, res) => {
   try {
     const oficinas = await Oficina.find();
     res.body = (oficinas);
     res.status(200).json(oficinas);
+    
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener las oficinas', error });
   }
 };
+
 const getOficinasById = async (req, res) => {
   try {
     const oficina = await Oficina.findOne({ idOficina: req.params.idOficina });
@@ -465,6 +540,7 @@ const getOficinasById = async (req, res) => {
     res.status(500).json({ message: 'Error al obtener la oficina', error });
   }
 };
+
 const crearOficina = async (req, res) => {
   try {
     const nuevaOficina = new Oficina(req.body);
@@ -474,6 +550,7 @@ const crearOficina = async (req, res) => {
     res.status(500).json({ message: 'Error al crear la oficina', error });
   }
 };
+
 const actualizarOficina = async (req, res) => {
   try {
     const oficinaActualizada = await Oficina.findOneAndUpdate({ idOficina: req.params.idOficina }, req.body, { new: true });
@@ -485,6 +562,7 @@ const actualizarOficina = async (req, res) => {
     res.status(500).json({ message: 'Error al actualizar la oficina', error });
   }
 };
+
 const deleteOficina = async (req, res) => {
   try {
     const oficinaEliminada = await Oficina.findOneAndDelete({ idOficina: req.params.idOficina });
@@ -496,6 +574,7 @@ const deleteOficina = async (req, res) => {
     res.status(500).json({ message: 'Error al eliminar la oficina', error });
   }
 };
+
 module.exports = {
   getOficinas,
   getOficinasById,
@@ -503,20 +582,24 @@ module.exports = {
   actualizarOficina,
   deleteOficina
 };
+```
 ### FIN /src/controllers/oficinas.js
 
 ### /src/controllers/tipoEnvio.js
-
+```
 const tEnvio = require('../models/tipoEnvio');
+
 const obtenerTipoEnvio = async (req, res) => {
   try {
     const tenvio = await tEnvio.find();
     res.body = (tenvio);
     res.status(200).json(tenvio);
+    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 const crearTEnvio = async (req, res) => {
   const nuevoTE = new tEnvio(req.body);
   try {
@@ -526,6 +609,7 @@ const crearTEnvio = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
 const obtenerTEbyID = async (req, res) => {
   try {
     const tipoEnvio = await tEnvio.findOne({ idTDE: req.params.idTDE });
@@ -539,6 +623,7 @@ const obtenerTEbyID = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const actualizarTEnvio = async (req, res) => {
   try {
     const TEnvioActualizado = await tEnvio.findOneAndUpdate({ idTDE: req.params.idTDE }, req.body, { new: true });
@@ -570,10 +655,12 @@ module.exports = {
   actualizarTEnvio,
   eliminarTEnvio
 };
+```
 ### FIN /src/controllers/tipoEnvio.js
 
 ## -------- Directorio data --------
 ### /src/data/clientes.js
+```
 module.exports = [
     {
         "CURP": "ABCDE12345",
@@ -816,9 +903,11 @@ module.exports = [
         "Email": "luisgarcia@gmail.com"
     }
 ];
+```
 ### FIN /src/data/clientes.js
 
 ### /src/data/envios.js
+```
 module.exports = [
   {
     "idEnvio": 1,
@@ -1461,9 +1550,11 @@ module.exports = [
     "Estatus": "entregado"
   }
 ];
+```
 ### FIN /src/data/envios.js
 
 ### /src/data/oficina.js
+```
 module.exports = [
     {
     "idOficina": 1,
@@ -1526,9 +1617,11 @@ module.exports = [
         "Email": "oficina.oeste@empresa.com"
     }
 ];
+```
 ### FIN /src/data/oficina.js
 
 ### /src/data/tipoEnvio.js
+```
 module.exports = [
     {
         "idTDE": 1,
@@ -1549,10 +1642,12 @@ module.exports = [
         "tiempoEstimado": "12 horas"
     }
 ];
+```
 ### FIN /src/data/tipoEnvio.js
 
 ## -------- Directorio models --------
 ### /src/models/cliente.js
+```
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
@@ -1565,9 +1660,11 @@ const clienteSchema = new Schema({
 
 
 module.exports = mongoose.model('Clientes', clienteSchema);
+```
 ### FIN /src/models/cliente.js
 
 ### /src/models/envio.js
+```
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
@@ -1591,9 +1688,11 @@ const envioSchema = new Schema({
 });
 
 module.exports = mongoose.model('Envios', envioSchema);
+```
 ### FIN /src/models/envio.js
 
 ### /src/models/oficina.js
+```
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
@@ -1613,9 +1712,11 @@ const oficinaSchema = new Schema({
 });
 
 module.exports = mongoose.model('Oficinas', oficinaSchema);
+```
 ### FIN /src/models/oficina.js
 
 ### /src/models/tipoEnvio.js
+```
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
@@ -1641,11 +1742,12 @@ const tipoEnvioSchema = new Schema({
 });
 
 module.exports = mongoose.model('Tipo_Envio', tipoEnvioSchema);   
+```
 ### FIN /src/models/tipoEnvio.js
 
 ## -------- Directorio routes --------
 ### /src/routes/clientes.js
-
+```
 // Importar los módulos necesarios
 const express = require('express'); // Framework para construir aplicaciones web y APIs
 const router = express.Router(); // Módulo de enrutador de Express
@@ -1676,9 +1778,11 @@ router.delete('/:curp', eliminarCliente);
 
 
 module.exports = router;
+```
 ### FIN /src/routes/clientes.js
 
 ### /src/routes/envio.js
+```
 // /src/routes/alumnos.js
 
 // Importar los módulos necesarios
@@ -1728,10 +1832,11 @@ router.get('/query/q7',listarClientesYEnviosQ7);
 router.get('/query/q8/:Origen',listarClientesYEnviosQ8);
 // Exportamos el enrutador para cuando se requiera ser utilizado en otros archivos
 module.exports = router;
+```
 ### FIN /src/routes/envio.js
 
 ### /src/routes/oficina.js
-
+```
 // Importar los módulos necesarios
 const express = require('express'); // Framework para construir aplicaciones web y APIs
 const router = express.Router(); // Módulo de enrutador de Express
@@ -1755,11 +1860,11 @@ router.delete('/:idOficina', deleteOficina);
 
 // Exportamos el enrutador para cuando se requiera ser utilizado en otros archivos
 module.exports = router;
+```
 ### FIN /src/routes/oficina.js
 
 ### /src/routes/tipoEnvio.js
-// /src/routes/alumnos.js
-
+```
 // Importar los módulos necesarios
 const express = require('express'); // Framework para construir aplicaciones web y APIs
 const router = express.Router(); // Módulo de enrutador de Express
@@ -1788,10 +1893,12 @@ router.delete('/:idTDE', eliminarTEnvio);
 
 // Exportamos el enrutador para cuando se requiera ser utilizado en otros archivos
 module.exports = router;
+```
 ### FIN /src/routes/tipoEnvio.js
 
 ## -------- Directorio config --------
 ### /src/config/db.js
+```
 const mongoose = require('mongoose'); // Módulo para interactuar con MongoDB
 const redis = require('redis'); // Módulo para interactuar con Redis
 require('dotenv').config(); // Cargar variables de entorno desde un archivo .env
@@ -1855,10 +1962,12 @@ redisClient.connect()
 
 // Exportamos las instancias de mongoose y redisClient para usarlas en otras partes de la aplicación
 module.exports = { mongoose, redisClient };
+```
 ### FIN /src/config/db.js
 
 ## -------- Directorio middleware --------
 ### /src/middleware/logger.js
+```
 // /src/middleware/logger.js
 
 // Importar el módulo 'redis' para interactuar con una base de datos Redis
@@ -1919,9 +2028,11 @@ module.exports = (req, res, next) => {
   // Pasar al siguiente middleware
   next();
 };
+```
 ### FIN /src/middleware/logger.js
 ## -------- Server --------
 ## /src/server.js
+```
 require('dotenv').config(); // Carga las variables de entorno desde el archivo .env
 const express = require('express'); // Framework para construir aplicaciones web y APIs
 const cors = require('cors'); // Middleware para permitir solicitudes de recursos cruzados
@@ -1953,10 +2064,11 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
 });
-
+```
 ### FIN /src/server.js
 
 ## .env
+```
 # URI de conexión a la base de datos MongoDB
 # Formato: mongodb://[usuario:contraseña@]host:puerto/baseDeDatos
 MONGO_URI=mongodb://mongo01:27017/Paqueteria
@@ -1968,9 +2080,11 @@ REDIS_PORT=6379
 # Puerto en el que nuestra aplicaci'on Node.js escuchará
 PORT=3000
 #
+```
 ## FIN .env
 
 ## docker-compose.yml
+```
 version: '3.8'
 
 services:
@@ -2059,9 +2173,11 @@ services:
 networks:
   red01:
     driver: bridge
+```
 ## FIN docker-compose.yml
 
 ## Dockerfile
+```
 # Usar la imagen oficial de Node.js como base
 FROM node
 # Establecer el directorio de trabajo dentro del contenedor
@@ -2076,4 +2192,5 @@ COPY . .
 EXPOSE 3000
 # Comando para iniciar la aplicación
 CMD ["node", "src/server.js"]
+```
 ## FIN Dockerfile
