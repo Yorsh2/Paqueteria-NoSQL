@@ -85,7 +85,7 @@ npm install morgan
 # ARCHIVOS
 ## -------- Directorio controllers --------
 ### /src/controllers/clientes.js
-```
+```javascript
 const Cliente = require('../models/cliente');
 
 const obtenerClientes = async (req, res) => {
@@ -158,7 +158,7 @@ module.exports = {
 };
 ```
 ### /src/controllers/envio.js
-```
+```javascript
 const Envios = require('../models/envio');
 const Clientes = require('../models/cliente');
 const Oficinas = require('../models/oficina');
@@ -508,7 +508,7 @@ module.exports = {
 };
 ```
 ### /src/controllers/oficinas.js
-```
+```javascript
 // Importamos el modelo de Mongoose para Materia
 const Oficina = require('../models/oficina');
 
@@ -581,7 +581,7 @@ module.exports = {
 ```
 
 ### /src/controllers/tipoEnvio.js
-```
+```javascript
 const tEnvio = require('../models/tipoEnvio');
 
 const obtenerTipoEnvio = async (req, res) => {
@@ -653,7 +653,7 @@ module.exports = {
 ```
 ## -------- Directorio data --------
 ### /src/data/clientes.js
-```
+```javascript
 module.exports = [
     {
         "CURP": "ABCDE12345",
@@ -1545,7 +1545,7 @@ module.exports = [
 ```
 
 ### /src/data/oficina.js
-```
+```javascript
 module.exports = [
     {
     "idOficina": 1,
@@ -1611,7 +1611,7 @@ module.exports = [
 ```
 
 ### /src/data/tipoEnvio.js
-```
+```javascript
 module.exports = [
     {
         "idTDE": 1,
@@ -1636,7 +1636,7 @@ module.exports = [
 
 ## -------- Directorio models --------
 ### /src/models/cliente.js
-```
+```javascript
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
@@ -1652,7 +1652,7 @@ module.exports = mongoose.model('Clientes', clienteSchema);
 ```
 
 ### /src/models/envio.js
-```
+```javascript
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
@@ -1679,7 +1679,7 @@ module.exports = mongoose.model('Envios', envioSchema);
 ```
 
 ### /src/models/oficina.js
-```
+```javascript
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
@@ -1702,7 +1702,7 @@ module.exports = mongoose.model('Oficinas', oficinaSchema);
 ```
 
 ### /src/models/tipoEnvio.js
-```
+```javascript
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
@@ -1732,7 +1732,7 @@ module.exports = mongoose.model('Tipo_Envio', tipoEnvioSchema);
 
 ## -------- Directorio routes --------
 ### /src/routes/clientes.js
-```
+```javascript
 // Importar los módulos necesarios
 const express = require('express'); // Framework para construir aplicaciones web y APIs
 const router = express.Router(); // Módulo de enrutador de Express
@@ -1766,7 +1766,7 @@ module.exports = router;
 ```
 
 ### /src/routes/envio.js
-```
+```javascript
 // /src/routes/alumnos.js
 
 // Importar los módulos necesarios
@@ -1819,7 +1819,7 @@ module.exports = router;
 ```
 
 ### /src/routes/oficina.js
-```
+```javascript
 // Importar los módulos necesarios
 const express = require('express'); // Framework para construir aplicaciones web y APIs
 const router = express.Router(); // Módulo de enrutador de Express
@@ -1846,7 +1846,7 @@ module.exports = router;
 ```
 
 ### /src/routes/tipoEnvio.js
-```
+```javascript
 // Importar los módulos necesarios
 const express = require('express'); // Framework para construir aplicaciones web y APIs
 const router = express.Router(); // Módulo de enrutador de Express
@@ -1879,7 +1879,7 @@ module.exports = router;
 
 ## -------- Directorio config --------
 ### /src/config/db.js
-```
+```javascript
 const mongoose = require('mongoose'); // Módulo para interactuar con MongoDB
 const redis = require('redis'); // Módulo para interactuar con Redis
 require('dotenv').config(); // Cargar variables de entorno desde un archivo .env
@@ -1947,7 +1947,7 @@ module.exports = { mongoose, redisClient };
 
 ## -------- Directorio middleware --------
 ### /src/middleware/logger.js
-```
+```javascript
 // /src/middleware/logger.js
 
 // Importar el módulo 'redis' para interactuar con una base de datos Redis
@@ -2011,7 +2011,7 @@ module.exports = (req, res, next) => {
 ```
 ## -------- Server --------
 ## /src/server.js
-```
+```javascript
 require('dotenv').config(); // Carga las variables de entorno desde el archivo .env
 const express = require('express'); // Framework para construir aplicaciones web y APIs
 const cors = require('cors'); // Middleware para permitir solicitudes de recursos cruzados
