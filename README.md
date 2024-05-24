@@ -157,8 +157,6 @@ module.exports = {
   eliminarCliente
 };
 ```
-### FIN /src/controllers/clientes.js
-
 ### /src/controllers/envio.js
 ```
 const Envios = require('../models/envio');
@@ -509,8 +507,6 @@ module.exports = {
   listarClientesYEnviosQ8
 };
 ```
-### FIN /src/controllers/envio.js
-
 ### /src/controllers/oficinas.js
 ```
 // Importamos el modelo de Mongoose para Materia
@@ -583,7 +579,6 @@ module.exports = {
   deleteOficina
 };
 ```
-### FIN /src/controllers/oficinas.js
 
 ### /src/controllers/tipoEnvio.js
 ```
@@ -656,8 +651,6 @@ module.exports = {
   eliminarTEnvio
 };
 ```
-### FIN /src/controllers/tipoEnvio.js
-
 ## -------- Directorio data --------
 ### /src/data/clientes.js
 ```
@@ -904,7 +897,6 @@ module.exports = [
     }
 ];
 ```
-### FIN /src/data/clientes.js
 
 ### /src/data/envios.js
 ```
@@ -1551,7 +1543,6 @@ module.exports = [
   }
 ];
 ```
-### FIN /src/data/envios.js
 
 ### /src/data/oficina.js
 ```
@@ -1618,7 +1609,6 @@ module.exports = [
     }
 ];
 ```
-### FIN /src/data/oficina.js
 
 ### /src/data/tipoEnvio.js
 ```
@@ -1643,7 +1633,6 @@ module.exports = [
     }
 ];
 ```
-### FIN /src/data/tipoEnvio.js
 
 ## -------- Directorio models --------
 ### /src/models/cliente.js
@@ -1661,7 +1650,6 @@ const clienteSchema = new Schema({
 
 module.exports = mongoose.model('Clientes', clienteSchema);
 ```
-### FIN /src/models/cliente.js
 
 ### /src/models/envio.js
 ```
@@ -1689,7 +1677,6 @@ const envioSchema = new Schema({
 
 module.exports = mongoose.model('Envios', envioSchema);
 ```
-### FIN /src/models/envio.js
 
 ### /src/models/oficina.js
 ```
@@ -1713,7 +1700,6 @@ const oficinaSchema = new Schema({
 
 module.exports = mongoose.model('Oficinas', oficinaSchema);
 ```
-### FIN /src/models/oficina.js
 
 ### /src/models/tipoEnvio.js
 ```
@@ -1743,7 +1729,6 @@ const tipoEnvioSchema = new Schema({
 
 module.exports = mongoose.model('Tipo_Envio', tipoEnvioSchema);   
 ```
-### FIN /src/models/tipoEnvio.js
 
 ## -------- Directorio routes --------
 ### /src/routes/clientes.js
@@ -1779,7 +1764,6 @@ router.delete('/:curp', eliminarCliente);
 
 module.exports = router;
 ```
-### FIN /src/routes/clientes.js
 
 ### /src/routes/envio.js
 ```
@@ -1833,7 +1817,6 @@ router.get('/query/q8/:Origen',listarClientesYEnviosQ8);
 // Exportamos el enrutador para cuando se requiera ser utilizado en otros archivos
 module.exports = router;
 ```
-### FIN /src/routes/envio.js
 
 ### /src/routes/oficina.js
 ```
@@ -1861,7 +1844,6 @@ router.delete('/:idOficina', deleteOficina);
 // Exportamos el enrutador para cuando se requiera ser utilizado en otros archivos
 module.exports = router;
 ```
-### FIN /src/routes/oficina.js
 
 ### /src/routes/tipoEnvio.js
 ```
@@ -1894,7 +1876,6 @@ router.delete('/:idTDE', eliminarTEnvio);
 // Exportamos el enrutador para cuando se requiera ser utilizado en otros archivos
 module.exports = router;
 ```
-### FIN /src/routes/tipoEnvio.js
 
 ## -------- Directorio config --------
 ### /src/config/db.js
@@ -1963,7 +1944,6 @@ redisClient.connect()
 // Exportamos las instancias de mongoose y redisClient para usarlas en otras partes de la aplicación
 module.exports = { mongoose, redisClient };
 ```
-### FIN /src/config/db.js
 
 ## -------- Directorio middleware --------
 ### /src/middleware/logger.js
@@ -2029,7 +2009,6 @@ module.exports = (req, res, next) => {
   next();
 };
 ```
-### FIN /src/middleware/logger.js
 ## -------- Server --------
 ## /src/server.js
 ```
@@ -2065,7 +2044,6 @@ app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
 });
 ```
-### FIN /src/server.js
 
 ## .env
 ```
