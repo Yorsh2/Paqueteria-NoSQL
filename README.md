@@ -899,7 +899,7 @@ module.exports = [
 ```
 
 ### /src/data/envios.js
-```
+```javascript
 module.exports = [
   {
     "idEnvio": 1,
