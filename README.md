@@ -1,5 +1,9 @@
 # Alumno: Guzman Alvarez Jorge Alberto
 # Caso 01: Paqueteria
+## Imagen de Docker:
+```bash
+docker pull jorgeg2/paqueteria-app01
+```
 ## Entidades:
 ```
 Cliente:
