@@ -2059,7 +2059,6 @@ REDIS_PORT=6379
 PORT=3000
 #
 ```
-## FIN .env
 
 ## docker-compose.yml
 ```
@@ -2152,7 +2151,6 @@ networks:
   red01:
     driver: bridge
 ```
-## FIN docker-compose.yml
 
 ## Dockerfile
 ```
@@ -2171,4 +2169,3 @@ EXPOSE 3000
 # Comando para iniciar la aplicación
 CMD ["node", "src/server.js"]
 ```
-## FIN Dockerfile
