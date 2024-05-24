@@ -82,8 +82,8 @@ npm install morgan
 # ARCHIVOS
 ## -------- Directorio controllers --------
 ### /src/controllers/clientes.js
-const Cliente = require('../models/cliente');
 
+const Cliente = require('../models/cliente');
 const obtenerClientes = async (req, res) => {
   try {
     const clientes = await Cliente.find();
@@ -94,7 +94,6 @@ const obtenerClientes = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 const crearClientes = async (req, res) => {
   const nuevoCliente = new Cliente(req.body);
   try {
@@ -104,7 +103,6 @@ const crearClientes = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
 const obtenerClientesPorCURP = async (req, res) => {
   try {
     const cliente = await Cliente.findOne({ CURP: req.params.curp });
@@ -118,7 +116,6 @@ const obtenerClientesPorCURP = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 const actualizarCliente = async (req, res) => {
   try {
     const clienteActualizado = await Cliente.findOneAndUpdate({ CURP: req.params.curp }, req.body, {
@@ -132,7 +129,6 @@ const actualizarCliente = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
 const eliminarCliente = async (req, res) => {
   try {
     const cliente = await Cliente.findOneAndDelete({ CURP: req.params.curp });
@@ -144,7 +140,6 @@ const eliminarCliente = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 module.exports = {
   obtenerClientes,
   crearClientes,
@@ -152,25 +147,23 @@ module.exports = {
   actualizarCliente,
   eliminarCliente
 };
-### FIN /src/controllers/clientes.js
 
+### FIN /src/controllers/clientes.js
 ### /src/controllers/envio.js
+
 const Envios = require('../models/envio');
 const Clientes = require('../models/cliente');
 const Oficinas = require('../models/oficina');
 const TipoEnvio = require('../models/tipoEnvio');
-
 const obtenerEnvios = async (req, res) => {
   try {
     const envio = await Envios.find();
     res.body = (envio);
     res.status(200).json(envio);
-   
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 const crearEnvios = async (req, res) => {
   const nuevoEnvio = new Envios(req.body);
   try {
@@ -180,7 +173,6 @@ const crearEnvios = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
 const obtenerEnviosPorID = async (req, res) => {
   try {
     const envio = await Envios.findOne({ idEnvio: req.params.idEnvio });
@@ -188,13 +180,11 @@ const obtenerEnviosPorID = async (req, res) => {
       return res.status(404).json({ message: 'No se encontró el tipo de envio' });
     }
     res.body = (envio);
-    res.status(200).json(envio);
-    
+    res.status(200).json(envio);  
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 const actualizarEnvio = async (req, res) => {
   try {
     const EnvioActualizado = await Envios.findOneAndUpdate({ idEnvio: req.params.idEnvio }, req.body, { new: true });
@@ -206,7 +196,6 @@ const actualizarEnvio = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
 const eliminarEnvio = async (req, res) => {
   try {
     const envio = await Envios.findOneAndDelete({ idEnvio: req.params.idEnvio });
@@ -218,27 +207,20 @@ const eliminarEnvio = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 const listarEnviosQ2 = async (req, res) => {
   const { Origen } = req.query;
   try {
     const query = { Origen: req.params.Origen, Estatus: "tránsito" };
-
     if (Origen) {query.Origen = Origen;}
-
     const envios = await Envios.find(query);
-
     const origenIds = [...new Set(envios.map(envio => envio.Origen))];
     const destinoIds = [...new Set(envios.map(envio => envio.Destino))];
     const oficinaIds = [...new Set([...origenIds, ...destinoIds])];
-
     const oficinas = await Oficinas.find({ idOficina: { $in: oficinaIds } });
-
     const oficinaMap = oficinas.reduce((map, oficina) => {
       map[oficina.idOficina] = oficina.Nombre;
       return map;
     }, {});
-
     const enviosConNombres = envios.map(envio => ({
       ...envio.toObject(),
       Origen: oficinaMap[envio.Origen] || 'Desconocido',
@@ -251,35 +233,26 @@ const listarEnviosQ2 = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 const listarTEnviosQ3 = async (req, res) => {
   const { Tipo_Envio } = req.query;
-
   try {
     const query = { Tipo_Envio: req.params.Tipo_Envio };
     if (Tipo_Envio) {query.Tipo_Envio = Tipo_Envio;}
-
     const envios = await Envios.find(query);
-
     const tipoEnvioIds = [...new Set(envios.map(envio => envio.Tipo_Envio))];
     const tiposEnvio = await TipoEnvio.find({ idTDE: { $in: tipoEnvioIds } });
-
     const tipoEnvioMap = tiposEnvio.reduce((map, tipo) => {
       map[tipo.idTDE] = tipo.Descripcion;
       return map;
     }, {});
-
     const origenIds = [...new Set(envios.map(envio => envio.Origen))];
     const destinoIds = [...new Set(envios.map(envio => envio.Destino))];
     const oficinaIds = [...new Set([...origenIds, ...destinoIds])];
-
     const oficinas = await Oficinas.find({ idOficina: { $in: oficinaIds } });
-
     const oficinaMap = oficinas.reduce((map, oficina) => {
       map[oficina.idOficina] = oficina.Nombre;
       return map;
     }, {});
-
     const enviosConNombresYTipoEnvio = envios.map(envio => ({
       ...envio.toObject(),
       Origen: oficinaMap[envio.Origen] || 'Desconocido',
@@ -288,40 +261,31 @@ const listarTEnviosQ3 = async (req, res) => {
     }));
     res.body = (enviosConNombresYTipoEnvio);  
     res.status(200).json(enviosConNombresYTipoEnvio);
-    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 const listarEnviosQ4 = async (req, res) => {
   const { Cliente } = req.query;
-
   try {
     const query = { Cliente: req.params.Cliente };
     if (Cliente) {
       query.Cliente = Cliente;
     }
-
     const enviosCliente = await Envios.find(query);
-
     const clientesCURP = [...new Set(enviosCliente.map(envio => envio.Cliente))];
-
     const clientes = await Clientes.find({ CURP: { $in: clientesCURP } }, 'CURP Nombre Apellidos Email');
-
     const clientesYEnvios = await Promise.all(clientes.map(async (cliente) => {
       const enviosClienteCliente = enviosCliente.filter(envio => envio.Cliente === cliente.CURP);
       const enviosConInfo = await Promise.all(enviosClienteCliente.map(async (envio) => {
         const origen = await Oficinas.findOne({ idOficina: envio.Origen });
         const destino = await Oficinas.findOne({ idOficina: envio.Destino });
-
         return {
           ...envio.toObject(),
           Origen: origen ? origen.Nombre : 'Desconocido',
           Destino: destino ? destino.Nombre : 'Desconocido'
         };
       }));
-
       return {
         cliente,
         envios: enviosConInfo
@@ -334,9 +298,6 @@ const listarEnviosQ4 = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
 const listarClientesPorOficinaQ5 = async (req, res) => {
   const { Origen } = req.query;
 
@@ -355,29 +316,22 @@ const listarClientesPorOficinaQ5 = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 const listarEnviosQ6 = async (req, res) => {
   const { origen } = req.query;
-
   try {
     const query = { Estatus: "entregado" };
     if (origen) {
       query.Origen = origen;
     }
-
     const envios = await Envios.find(query);
-
     const origenIds = [...new Set(envios.map(envio => envio.Origen))];
     const destinoIds = [...new Set(envios.map(envio => envio.Destino))];
     const oficinaIds = [...new Set([...origenIds, ...destinoIds])];
-
     const oficinas = await Oficinas.find({ idOficina: { $in: oficinaIds } });
-
     const oficinaMap = oficinas.reduce((map, oficina) => {
       map[oficina.idOficina] = oficina.Nombre;
       return map;
     }, {});
-
     const enviosConNombres = envios.map(envio => ({
       ...envio.toObject(),
       Origen: oficinaMap[envio.Origen] || 'Desconocido',
@@ -385,19 +339,15 @@ const listarEnviosQ6 = async (req, res) => {
     }));
     res.body = (enviosConNombres);
     res.status(200).json(enviosConNombres);
-    
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 const listarClientesYEnviosQ7 = async (req, res) => {
   try {
     const enviosTerrestres = await Envios.find({ Tipo_Envio: 1 });
     const clientesCURP = [...new Set(enviosTerrestres.map(envio => envio.Cliente))];
     const clientes = await Clientes.find({ CURP: { $in: clientesCURP } }, 'CURP Nombre Apellidos Email');
-
     // Obtener información de oficinas y tipos de envío
     const tipoEnvioIds = [...new Set(enviosTerrestres.map(envio => envio.Tipo_Envio))];
     const tiposEnvio = await TipoEnvio.find({ idTDE: { $in: tipoEnvioIds } });
@@ -405,7 +355,6 @@ const listarClientesYEnviosQ7 = async (req, res) => {
       map[tipo.idTDE] = tipo.Descripcion;
       return map;
     }, {});
-
     const origenIds = [...new Set(enviosTerrestres.map(envio => envio.Origen))];
     const destinoIds = [...new Set(enviosTerrestres.map(envio => envio.Destino))];
     const oficinaIds = [...new Set([...origenIds, ...destinoIds])];
@@ -414,7 +363,6 @@ const listarClientesYEnviosQ7 = async (req, res) => {
       map[oficina.idOficina] = oficina.Nombre;
       return map;
     }, {});
-
     // Mapear clientes con sus envíos y agregar información de oficinas y tipos de envío
     const clientesYEnvios = clientes.map(cliente => ({
       cliente,
@@ -428,29 +376,21 @@ const listarClientesYEnviosQ7 = async (req, res) => {
     }));
     res.body = (clientesYEnvios);
     res.status(200).json(clientesYEnvios);
-    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
-
 //Q8. Listar los clientes y sus envíos se han remitido por el servicio express considerando una oficina en específico.
 const listarClientesYEnviosQ8 = async (req, res) => {
   const { Origen } = req.query;
-
   try {
     const query = { Origen: req.params.Origen, Tipo_Envio: 3 };
     if (Origen) { query.Origen = Origen; }
-
     const enviosExpress = await Envios.find(query);
-
     // Obtener clientes únicos de los envíos expres
     const clientesCURP = [...new Set(enviosExpress.map(envio => envio.Cliente))];
-
     // Encontrar la información de los clientes
     const clientes = await Clientes.find({ CURP: { $in: clientesCURP } }, 'CURP Nombre Apellidos Email');
-
     // Obtener información de oficinas y tipos de envío
     const origenIds = [...new Set(enviosExpress.map(envio => envio.Origen))];
     const destinoIds = [...new Set(enviosExpress.map(envio => envio.Destino))];
@@ -460,14 +400,12 @@ const listarClientesYEnviosQ8 = async (req, res) => {
       map[oficina.idOficina] = oficina.Nombre;
       return map;
     }, {});
-
     const tipoEnvioIds = [...new Set(enviosExpress.map(envio => envio.Tipo_Envio))];
     const tiposEnvio = await TipoEnvio.find({ idTDE: { $in: tipoEnvioIds } });
     const tipoEnvioMap = tiposEnvio.reduce((map, tipo) => {
       map[tipo.idTDE] = tipo.Descripcion;
       return map;
     }, {});
-
     // Mapear clientes con sus envíos y agregar información de oficinas y tipos de envío
     const clientesYEnvios = clientes.map(cliente => ({
       cliente,
@@ -481,13 +419,10 @@ const listarClientesYEnviosQ8 = async (req, res) => {
     }));
     res.body = (clientesYEnvios);
     res.status(200).json(clientesYEnvios);
-    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
-
 module.exports = {
   obtenerEnvios,
   crearEnvios,
@@ -502,25 +437,21 @@ module.exports = {
   listarClientesYEnviosQ7,
   listarClientesYEnviosQ8
 };
+
 ### FIN /src/controllers/envio.js
-
 ### /src/controllers/oficinas.js
-
 
 // Importamos el modelo de Mongoose para Materia
 const Oficina = require('../models/oficina');
-
 const getOficinas = async (req, res) => {
   try {
     const oficinas = await Oficina.find();
     res.body = (oficinas);
     res.status(200).json(oficinas);
-    
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener las oficinas', error });
   }
 };
-
 const getOficinasById = async (req, res) => {
   try {
     const oficina = await Oficina.findOne({ idOficina: req.params.idOficina });
@@ -534,7 +465,6 @@ const getOficinasById = async (req, res) => {
     res.status(500).json({ message: 'Error al obtener la oficina', error });
   }
 };
-
 const crearOficina = async (req, res) => {
   try {
     const nuevaOficina = new Oficina(req.body);
@@ -544,7 +474,6 @@ const crearOficina = async (req, res) => {
     res.status(500).json({ message: 'Error al crear la oficina', error });
   }
 };
-
 const actualizarOficina = async (req, res) => {
   try {
     const oficinaActualizada = await Oficina.findOneAndUpdate({ idOficina: req.params.idOficina }, req.body, { new: true });
@@ -556,7 +485,6 @@ const actualizarOficina = async (req, res) => {
     res.status(500).json({ message: 'Error al actualizar la oficina', error });
   }
 };
-
 const deleteOficina = async (req, res) => {
   try {
     const oficinaEliminada = await Oficina.findOneAndDelete({ idOficina: req.params.idOficina });
@@ -568,7 +496,6 @@ const deleteOficina = async (req, res) => {
     res.status(500).json({ message: 'Error al eliminar la oficina', error });
   }
 };
-
 module.exports = {
   getOficinas,
   getOficinasById,
@@ -581,18 +508,15 @@ module.exports = {
 ### /src/controllers/tipoEnvio.js
 
 const tEnvio = require('../models/tipoEnvio');
-
 const obtenerTipoEnvio = async (req, res) => {
   try {
     const tenvio = await tEnvio.find();
     res.body = (tenvio);
     res.status(200).json(tenvio);
-    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 const crearTEnvio = async (req, res) => {
   const nuevoTE = new tEnvio(req.body);
   try {
@@ -602,7 +526,6 @@ const crearTEnvio = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
 const obtenerTEbyID = async (req, res) => {
   try {
     const tipoEnvio = await tEnvio.findOne({ idTDE: req.params.idTDE });
@@ -616,7 +539,6 @@ const obtenerTEbyID = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 const actualizarTEnvio = async (req, res) => {
   try {
     const TEnvioActualizado = await tEnvio.findOneAndUpdate({ idTDE: req.params.idTDE }, req.body, { new: true });
